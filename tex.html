@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>Mathedemo</title>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript"
+  src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+
+<body>
+<h2>First Derivative Test and Absolute Maximum/Minimums</h2>
+The maximum and minimum values of a function are necessary for optimization in computation, engineering, and many other area.
+In Calculus, one is tasked with finding the maximum and minimum values of a function on an interval as well as the relative maximum and minimum values on that interval. This powerful tool can be applied to optimize solutions in computing, engineering, and more.
+We have learned in Calculus that a critical point is where the derivative of the function is 0. Also, we were introduced to the notion of relative maximums and minimums. Vaguely a relative maximum corresponds to a peak and a relative minimum corresponds to a valley.
+Then we were given an algorithm to find all relative maximums and minimums.
+A simple example would be find the absolute extrema of $f(x) = x^3 - 3x + 1$ on the interval $[-2,0]$.
+Step one would be to compute $f'(x) = 3x^2 - 3$. Next we set $f'(x) = 3x^2 - 3= 0$ and solve for the values of $x$ that satisfy the equation.
+So, this reduces to $x^2-1 = (x-1)(x+1) = 0$. Since $1$ is not in the interval, our only critical point is $-1$. Next we are told to take the critical points, and find the relative extrema. We are then told to find the outputs of $f$ at the end points of the interval.
+$f(-2) = -1, f(-1) =3, f(0)=1$. So the absolute maximum of the function is $1$ and occurs at $x=-1$  and the absolute minimum of the function is $-1$ and occurs at $x=-2$. In this case our absolute maximum is an absolute minimum.
+It is quite an easy algorithm, but how does it work? How can you gaurentee these are the absolute maximum and minimums, let a lone the existence of extrema? Also, why the endpoints?
+
+We know that every continuous function defined on a closed and bounded interval, such as $[-2,0]$, must obtain a maximum and minimum value in its image. This is due to the fact that continuous functions map closed and bounded intervals to closed and bounded intervals. More generally they map compact sets to compact sets, but we will discuss that another time.
+We also know that a differentiable function is continuous. Therefore, it must obtain a maximum and minimum value in its image.
+We also need the following lemma:<br><br>
+Suppose that $f$ attains a local maximum or local minimum at the point $x_0$. Then $x_0$ is a critical point. 
+Suppose that $f$ attains a local maximum at $x_0$. Then, there exists a radius, $h>0$, such that $ \forall x \in (x_0-h,x_0+h), f(x_0) \geq f(x)$All this line is basically saying that "around" a local maximum, all the points are less than it. 
+Considering the difference quotient,
+$$f(x_0+h) - f(x_0) \leq 0 \implies \frac{f(x_0+h) - f(x_0)}{h} \leq 0 $$ 
+$$ f(x_0+(-h)) - f(x_0) \leq 0 \implies \frac{f(x_0+(-h)) - f(x_0)}{-h} \geq 0$$
+<br><br>
+Since the derivative exists, the limit of the difference quotient must satisfy: <br><br>
+$$ 0 \leq \lim_{h\to 0}\frac{f(x_0-h) - f(x_0)}{-h}= \lim_{h\to0}\frac{f(x_0+h) - f(x_0)}{h} \leq 0$$
+
+We conclude that $f'(x_0) = 0$ and $x_0$ is a critical point. It is a similar story for when $f$ attains a local minimum.
+So, if we have the ability to find all critical points, we will consequently find all relative extrema. So why do we plug in the end points? The reason for this is that the behavior of the function between critical points is monotonic.
+How do we know? This is actually a little complicated, but it is mainly do to Darboux Theorem. This Theorem says that a derivative has the Intermediatve Value Property. At first this might seem obvious by reasoning that the derivative of a function is continuous. In general this is not true. So Darboux's Theorem gives us a powerful property of the derivative.
+Suppose that $x_0 < x_1$ are critical points and that there are no critical points between them. Let $x_0 < y_0 < y_1 < x_1$. If $f'(y_0) > 0 and f'(y_1) < 0, then by Darboux Theorem it must be that there is a point $z, y_0 < z < y_1$ $ where $f'(z) = 0, by the intermeidate value property of the derivative.
+In otherwrods, $z$ is a critical point. But this can not be as there were no critical points between $x_0,x_1$. It is a similar case if $f'(y_1) < 0$ and $f'(y_1) > 0$. So, since the function is montonic in between relative extrema,
+
+</body>
+</html>
