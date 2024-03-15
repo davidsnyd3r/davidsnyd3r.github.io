@@ -13,8 +13,8 @@
         <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
         <style>
             #image-container {
-                width: 128px;
-                height: 128px;
+                width: 300px;
+                height: 300px;
                 border: 1px solid #ccc;
                 margin: 20px auto;
                 overflow: hidden;
@@ -25,6 +25,12 @@
                 max-height: 100%;
                 display: block;
                 margin: auto;
+            }
+            #upload-box {
+                border: 2px dashed #aaa;
+                padding: 20px;
+                text-align: center;
+                cursor: pointer;
             }
         </style>
     </head>
@@ -58,14 +64,13 @@
 
                 <!-- Main -->
                     <div id="main">
-                        <!-- Upload Form -->
-                        <section>
-                            <h2>Image Classification</h2>
-                            <form id="upload-form" action="/predict" method="post" enctype="multipart/form-data">
-                                <input type="file" name="file" id="file" accept="image/*">
-                                <button type="submit">Predict</button>
-                            </form>
-                        </section>
+                        <!-- Drag and Drop Box -->
+                        <div id="upload-box">
+                            <h2>Drag & Drop Photo Here</h2>
+                            <p>or</p>
+                            <input type="file" id="file" accept="image/*" style="display: none;">
+                            <button id="upload-button">Browse</button>
+                        </div>
 
                         <!-- Image Container -->
                         <div id="image-container">
@@ -107,9 +112,40 @@
             <script src="assets/js/jquery.min.js"></script>
             <script>
                 $(document).ready(function() {
-                    $('#upload-form').submit(function(e) {
+                    // Drag and drop functionality
+                    var uploadBox = document.getElementById('upload-box');
+                    var fileInput = document.getElementById('file');
+
+                    uploadBox.addEventListener('dragover', function(e) {
                         e.preventDefault();
-                        var formData = new FormData(this);
+                        uploadBox.style.border = '2px dashed #333';
+                    });
+
+                    uploadBox.addEventListener('dragleave', function(e) {
+                        e.preventDefault();
+                        uploadBox.style.border = '2px dashed #aaa';
+                    });
+
+                    uploadBox.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        uploadBox.style.border = '2px dashed #aaa';
+                        fileInput.files = e.dataTransfer.files;
+                        uploadImage();
+                    });
+
+                    // Browse button functionality
+                    $('#upload-button').click(function() {
+                        fileInput.click();
+                    });
+
+                    fileInput.addEventListener('change', function() {
+                        uploadImage();
+                    });
+
+                    // Function to handle image upload
+                    function uploadImage() {
+                        var formData = new FormData();
+                        formData.append('file', fileInput.files[0]);
                         $.ajax({
                             url: '/predict',
                             type: 'POST',
@@ -118,12 +154,12 @@
                             contentType: false,
                             success: function(data) {
                                 $('#result').text('Prediction: ' + data.prediction);
-                                $('#uploaded-image').attr('src', URL.createObjectURL($('#file')[0].files[0]));
+                                $('#uploaded-image').attr('src', URL.createObjectURL(fileInput.files[0]));
                                 $('#image-container').show();
                                 $('#prediction-result').show();
                             }
                         });
-                    });
+                    }
                 });
             </script>
             <script src="assets/js/jquery.scrollex.min.js"></script>
