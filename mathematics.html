@@ -1,106 +1,175 @@
 <!DOCTYPE HTML>
 <!--
-	David Snyder Personal Page
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+    David Snyder Personal Page
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-	<head>
-		<title>David Snyder Personal Page</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+    <head>
+        <title>David Snyder Personal Page</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="assets/css/main.css" />
+        <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    </head>
+    <body class="is-preload">
 
-		<!-- Wrapper -->
-			<div id="wrapper" class="fade-in">
+        <!-- Wrapper -->
+            <div id="wrapper" class="fade-in">
 
-				<!-- Intro -->
-					<div id="intro">
-						<h1>Mathematics
-						</h1>
-				
-					</div>
-				<!-- Header -->
-					<header id="header">
-						<a href="mathematics.html" class="logo"></a>
-					</header>
+                <!-- Intro -->
+                    <div id="intro">
+                        <h1>Mathematics</h1>
+                    </div>
+                <!-- Header -->
+                    <header id="header">
+                        <a href="mathematics.html" class="logo"></a>
+                    </header>
 
-				<!-- Nav -->
-					<nav id="nav">
-						<ul class="links">
+                <!-- Nav -->
+                    <nav id="nav">
+                        <ul class="links">
                             <li><a href="index.html">About me</a></li>
-							<li><a href="mathcomp.html">Mathematics &cap; Computer Science </a></li>
-                            <li class = "active"><a href="mathematics.html">Mathematics</a></li>
-						</ul>
-						<ul class="icons">
-							<li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
-							<li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-						</ul>
-					</nav>
+                            <li><a href="mathcomp.html">Mathematics &cap; Computer Science </a></li>
+                            <li class="active"><a href="mathematics.html">Mathematics</a></li>
+                        </ul>
+                        <ul class="icons">
+                            <li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+                            <li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+                        </ul>
+                    </nav>
 
-				<!-- Main -->
-					<div id="main">
+                <!-- Main -->
+                    <div id="main">
 
-						<!-- Featured Post -->
-							<section class="post">
-								<article>
-									<header>
-										<h2>Monotone Convergence Theorem</h2>
-									</header>
-                                    <div class="image main"><img src="images/golden ratio.jpg" alt="" /></div>
-									<p> We will see the power of the Monotone Convergence Theorem to obtain the Golden Ratio as a limit of nested radicals. </p>
-									<ul class="actions special">
-									<li><a href="nest.pdf" class= "button">Read More </a>
-								</ul>
-							</article>
+                        <!-- Featured Post -->
+                            <section class="post">
+                                <article>
+                                    <header>
+                                        <h2>Monotone Convergence Theorem</h2>
+                                    </header>
+                                    <div class="content">
+                                        <p>We will see the power of the Monotone Convergence Theorem to obtain the Golden Ratio as a limit of nested radicals.</p>
+                                        <pre>
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage[english]{babel}
+\usepackage{amsmath,amsthm}
+\usepackage{amsfonts}
+\title{Nested Radical
+}
+\date{}
+\usepackage{setspace}
+\onehalfspacing
+\begin{document}
+\maketitle
 
-						<!-- Posts -->
-							
-						<!-- Footer -->
-							<footer>
-								<div class="pagination">
-									<!--<a href="#" class="previous">Prev</a>-->
-									<a href="#" class="page active">1</a>
-								</div>
-							</footer>
+Define 
+\[ x := \sqrt{1+\sqrt{1+\sqrt{1+\sqrt{1+\dots}}}} \]
 
-					</div>
+Define the sequence:
+\begin{align*}
+a_0 &= 1 \\
+a_1 &= \sqrt{1} = 1 \\
+a_2 &= \sqrt{1+\sqrt{1}} = \sqrt{2} \\
+a_3 &= \sqrt{1+\sqrt{1+\sqrt{1}}} = \sqrt{1+\sqrt{2}} \\
+a_4 &= \sqrt{1+\sqrt{1+\sqrt{1+\sqrt{1}}}} = \sqrt{1+\sqrt{1+\sqrt{2}}} \\
+&\dots
+\end{align*}
+The pattern continues and satisfies the recurrence relation:
+\[ a_n = \sqrt{1+a_{n-1}}, \quad \forall n \geq 1 \]
 
-				<!-- Footer -->
-					<footer id="footer">
-						<section class="split contact">
-							<section>
-								<h3>Email</h3>
-								<p><a href="#">dsnyder2013@fau.edu</a></p>
-							</section>
-							<section>
-								<h3>Social</h3>
-								<ul class="icons alt">
-									<li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
-									<li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-								</ul>
-							</section>
-						</section>
-					</footer>
+This begs the question, does \( x = \lim_{n\to\infty}a_n \) exist? If so, what is a closed form of \( x \)?
 
-				<!-- Copyright -->
-					<div id="copyright">
-						<ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
-					</div>
+\begin{proof}
+We show that \( a_n \) is increasing monotonically. 
 
-			</div>
+Let's proceed by induction.
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+Base Case: \( n = 1 \)
+\[ a_1 < a_2 \]
 
-	</body>
+Induction step: 
+Assume the induction hypothesis holds for \( n \leq k-1 \). 
+\[ a_{k+1} = \sqrt{1+ a_k}, \quad a_{k} = \sqrt{1+a_{k-1}} \]
+
+Since the square root function is monotonically increasing and \( a_{k-1} < a_k \) by the induction hypothesis, it follows that \( a_n \) is a monotonically increasing sequence. We conclude the sequence is monotonically increasing for all \( n \in \mathbb{N} \) by the Principle of Mathematical Induction.
+
+The sequence is increasing monotonically, but how do we know it does not trail off to infinity? We claim the sequence is bounded by \( 2 \).
+
+We prove this by mathematical induction.
+
+Base case: \( n=1 \)
+\[ a_1 = 1 < 2 \]
+
+Induction Step:
+
+Assume the induction hypothesis holds for \( n \leq k-1 \).
+\[ a_{k} = \sqrt{1 + a_{k-1}} \leq \sqrt{1+2} = \sqrt{3} < \sqrt{4} = 2 \]
+
+The induction hypothesis holds, and we conclude that \( a_n \) is bounded for all \( n \in \mathbb{N} \).
+
+By the Monotonic Convergence Theorem, the limit exists:
+\[ x = \lim_{n\to\infty} a_{n+1} = \lim_{n\to\infty} \sqrt{1+a_{n}} = \sqrt{\lim_{n\to\infty} (1 + a_n)} = \sqrt{1 + \lim_{n\to\infty} a_n } = \sqrt{1 + x} \]
+
+The square root function is continuous, justifying the passing of the limit inside. This yields:
+\[ x^2 - x - 1 = 0 \]
+
+Solving gives two roots, \( x_1 = \frac{1-\sqrt{5}}{2} \) and \( x_2 = \frac{1 + \sqrt{5}}{2} \). Since \( a_n \) is strictly positive, it follows that \( x = \frac{1 + \sqrt{5}}{2} \). This limit is known as the "Golden Ratio".
+\end{proof}
+\end{document}
+                                        </pre>
+                                    </div>
+                                </article>
+                            </section>
+
+                        <!-- Footer -->
+                            <footer>
+                                <div class="pagination">
+                                    <!--<a href="#" class="previous">Prev</a>-->
+                                    <a href="#" class="page active">1</a>
+                                </div>
+                            </footer>
+
+                    </div>
+
+                <!-- Footer -->
+                    <footer id="footer">
+                        <section class="split contact">
+                            <section>
+                                <h3>Email</h3>
+                                <p><a href="#">dsnyder2013@fau.edu</a></p>
+                            </section>
+                            <section>
+                                <h3>Social</h3>
+                                <ul class="icons alt">
+                                    <li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+                                    <li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+                                </ul>
+                            </section>
+                        </section>
+                    </footer>
+
+                <!-- Copyright -->
+                    <div id="copyright">
+                        <ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+                    </div>
+
+            </div>
+
+        <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/browser.min.js"></script>
+            <script src="assets/js/breakpoints.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <script src="assets/js/main.js"></script>
+
+    </body>
 </html>
