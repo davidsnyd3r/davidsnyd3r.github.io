@@ -9,8 +9,20 @@
         <title>David Snyder Personal Page</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <!-- Include the Google Font -->
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="assets/css/main.css" />
         <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+        <style>
+            /* Style for the pre tag to use the Roboto Mono font */
+            pre {
+                font-family: 'Roboto Mono', monospace;
+                font-size: 14px; /* Adjust the font size as needed */
+                white-space: pre-wrap; /* Preserve line breaks */
+                line-height: 1.4; /* Adjust line height as needed */
+                margin-bottom: 20px; /* Add some margin for better spacing */
+            }
+        </style>
     </head>
     <body class="is-preload">
 
@@ -50,79 +62,57 @@
                                     </header>
                                     <div class="content">
                                         <p>We will see the power of the Monotone Convergence Theorem to obtain the Golden Ratio as a limit of nested radicals.</p>
+                                        <!-- Include the LaTeX text within a pre tag -->
                                         <pre>
-\documentclass{article}
-\usepackage[utf8]{inputenc}
-\usepackage{latexsym}
-\usepackage{amssymb}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amsthm}
-\usepackage[english]{babel}
-\usepackage{amsmath,amsthm}
-\usepackage{amsfonts}
-\title{Nested Radical
-}
-\date{}
-\usepackage{setspace}
-\onehalfspacing
-\begin{document}
-\maketitle
-
 Define 
-\[ x := \sqrt{1+\sqrt{1+\sqrt{1+\sqrt{1+\dots}}}} \]
+x := √(1+√(1+√(1+√(1+...))))
 
 Define the sequence:
-\begin{align*}
-a_0 &= 1 \\
-a_1 &= \sqrt{1} = 1 \\
-a_2 &= \sqrt{1+\sqrt{1}} = \sqrt{2} \\
-a_3 &= \sqrt{1+\sqrt{1+\sqrt{1}}} = \sqrt{1+\sqrt{2}} \\
-a_4 &= \sqrt{1+\sqrt{1+\sqrt{1+\sqrt{1}}}} = \sqrt{1+\sqrt{1+\sqrt{2}}} \\
-&\dots
-\end{align*}
+a_0 = 1
+a_1 = √(1) = 1
+a_2 = √(1+√(1)) = √(2)
+a_3 = √(1+√(1+√(1))) = √(1+√(2))
+a_4 = √(1+√(1+√(1+√(1))))) = √(1+√(1+√(2)))
+...
 The pattern continues and satisfies the recurrence relation:
-\[ a_n = \sqrt{1+a_{n-1}}, \quad \forall n \geq 1 \]
+a_n = √(1+a_(n-1)), ∀ n ≥ 1
 
-This begs the question, does \( x = \lim_{n\to\infty}a_n \) exist? If so, what is a closed form of \( x \)?
+This begs the question, does x = lim_(n→∞) a_n exist? If so, what is a closed form of x?
 
-\begin{proof}
-We show that \( a_n \) is increasing monotonically. 
+We show that a_n is increasing monotonically. 
 
 Let's proceed by induction.
 
-Base Case: \( n = 1 \)
-\[ a_1 < a_2 \]
+Base Case: n = 1
+a_1 < a_2
 
 Induction step: 
-Assume the induction hypothesis holds for \( n \leq k-1 \). 
-\[ a_{k+1} = \sqrt{1+ a_k}, \quad a_{k} = \sqrt{1+a_{k-1}} \]
+Assume the induction hypothesis holds for n ≤ k-1.
+a_(k+1) = √(1+ a_k), a_k = √(1+a_(k-1))
 
-Since the square root function is monotonically increasing and \( a_{k-1} < a_k \) by the induction hypothesis, it follows that \( a_n \) is a monotonically increasing sequence. We conclude the sequence is monotonically increasing for all \( n \in \mathbb{N} \) by the Principle of Mathematical Induction.
+Since the square root function is monotonically increasing and a_(k-1) < a_k by the induction hypothesis, it follows that a_n is a monotonically increasing sequence. We conclude the sequence is monotonically increasing for all n ∈ ℕ by the Principle of Mathematical Induction.
 
-The sequence is increasing monotonically, but how do we know it does not trail off to infinity? We claim the sequence is bounded by \( 2 \).
+The sequence is increasing monotonically, but how do we know it does not trail off to infinity? We claim the sequence is bounded by 2.
 
 We prove this by mathematical induction.
 
-Base case: \( n=1 \)
-\[ a_1 = 1 < 2 \]
+Base case: n=1
+a_1 = 1 < 2
 
 Induction Step:
 
-Assume the induction hypothesis holds for \( n \leq k-1 \).
-\[ a_{k} = \sqrt{1 + a_{k-1}} \leq \sqrt{1+2} = \sqrt{3} < \sqrt{4} = 2 \]
+Assume the induction hypothesis holds for n ≤ k-1.
+a_k = √(1 + a_(k-1)) ≤ √(1+2) = √(3) < √(4) = 2
 
-The induction hypothesis holds, and we conclude that \( a_n \) is bounded for all \( n \in \mathbb{N} \).
+The induction hypothesis holds, and we conclude that a_n is bounded for all n ∈ ℕ.
 
 By the Monotonic Convergence Theorem, the limit exists:
-\[ x = \lim_{n\to\infty} a_{n+1} = \lim_{n\to\infty} \sqrt{1+a_{n}} = \sqrt{\lim_{n\to\infty} (1 + a_n)} = \sqrt{1 + \lim_{n\to\infty} a_n } = \sqrt{1 + x} \]
+x = lim_(n→∞) a_(n+1) = lim_(n→∞) √(1+a_n) = √(lim_(n→∞) (1 + a_n)) = √(1 + lim_(n→∞) a_n ) = √(1 + x)
 
 The square root function is continuous, justifying the passing of the limit inside. This yields:
-\[ x^2 - x - 1 = 0 \]
+x^2 - x - 1 = 0
 
-Solving gives two roots, \( x_1 = \frac{1-\sqrt{5}}{2} \) and \( x_2 = \frac{1 + \sqrt{5}}{2} \). Since \( a_n \) is strictly positive, it follows that \( x = \frac{1 + \sqrt{5}}{2} \). This limit is known as the "Golden Ratio".
-\end{proof}
-\end{document}
+Solving gives two roots, x_1 = (1-√5)/2 and x_2 = (1 + √5)/2. Since a_n is strictly positive, it follows that x = (1 + √5)/2. This limit is known as the "Golden Ratio".
                                         </pre>
                                     </div>
                                 </article>
