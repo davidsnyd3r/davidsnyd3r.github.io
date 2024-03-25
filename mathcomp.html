@@ -39,35 +39,12 @@
 <!-- Wrapper -->
 <div id="wrapper" class="fade-in">
 
-    <!-- Intro -->
-    <div id="intro">
-        <h1>Mathematics &cap; Computer Science</h1>
-    </div>
-
-    <!-- Header -->
-    <header id="header">
-        <a href="mathcomp.html" class="logo"></a>
-    </header>
-
-    <!-- Nav -->
-    <nav id="nav">
-        <ul class="links">
-            <li><a href="index.html">About me</a></li>
-            <li class="active"><a href="mathcomp.html">Mathematics &cap; Computer Science </a></li>
-            <li><a href="mathematics.html">Mathematics</a></li>
-        </ul>
-        <ul class="icons">
-            <li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
-            <li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-        </ul>
-    </nav>
-
     <!-- Main -->
     <div id="main">
-        <!-- Drag and Drop Box -->
+        <!-- Upload Box -->
         <div id="upload-box">
-            <h2>Drag & Drop Photo Here</h2>
-            <p>or</p>
+            <h2>Upload Photo</h2>
+            <p>Click the button below to choose an image file.</p>
             <input type="file" id="file" accept="image/*" style="display: none;">
             <button id="upload-button">Browse</button>
         </div>
@@ -83,23 +60,6 @@
             <div id="result"></div>
         </section>
     </div>
-
-    <!-- Footer -->
-    <footer id="footer">
-        <section class="split contact">
-            <section>
-                <h3>Email</h3>
-                <p><a href="#">dsnyder2013@fau.edu</a></p>
-            </section>
-            <section>
-                <h3>Social</h3>
-                <ul class="icons alt">
-                    <li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
-                    <li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-                </ul>
-            </section>
-        </section>
-    </footer>
 
     <!-- TensorFlow.js Script -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
@@ -123,10 +83,9 @@
             // Load the model
             const model = await loadModel();
 
-            // Function to handle drag and drop event
-            function handleDrop(event) {
-                event.preventDefault();
-                const file = event.dataTransfer.files[0];
+            // Function to handle image upload
+            function handleUpload(event) {
+                const file = event.target.files[0];
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     handleImage(e.target.result);
@@ -144,8 +103,7 @@
                 };
 
                 // Preprocess the image
-                const imgTensor = tf.browser.fromPixels(img).toFloat
-                ().div(tf.scalar(255));
+                const imgTensor = tf.browser.fromPixels(img).toFloat();
 
                 // Make prediction
                 const prediction = await predict(imgTensor.expandDims(0), model);
@@ -157,27 +115,13 @@
                 document.getElementById('prediction-result').style.display = 'block';
             }
 
-            // Set up drag and drop event listener
-            const dropZone = document.getElementById('upload-box');
-            dropZone.addEventListener('dragover', function (e) {
-                e.preventDefault();
-            });
-            dropZone.addEventListener('drop', handleDrop);
-
-            // Set up file input change event listener
+            // Set up event listener for file input change
             const fileInput = document.getElementById('file');
-            fileInput.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    handleImage(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            });
+            fileInput.addEventListener('change', handleUpload);
 
-            // Set up browse button click event listener
+            // Set up event listener for browse button click
             const uploadButton = document.getElementById('upload-button');
-            uploadButton.addEventListener('click', function (e) {
+            uploadButton.addEventListener('click', function () {
                 fileInput.click();
             });
         }
@@ -188,5 +132,4 @@
 </div>
 </body>
 </html>
-
 
