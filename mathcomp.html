@@ -145,4 +145,48 @@
 
                 // Preprocess the image
                 const imgTensor = tf.browser.fromPixels(img).toFloat
+                ().div(tf.scalar(255));
+
+                // Make prediction
+                const prediction = await predict(imgTensor.expandDims(0), model);
+
+                // Display prediction result
+                document.getElementById('result').innerText = 'Prediction: ' + prediction;
+
+                // Show prediction result section
+                document.getElementById('prediction-result').style.display = 'block';
+            }
+
+            // Set up drag and drop event listener
+            const dropZone = document.getElementById('upload-box');
+            dropZone.addEventListener('dragover', function (e) {
+                e.preventDefault();
+            });
+            dropZone.addEventListener('drop', handleDrop);
+
+            // Set up file input change event listener
+            const fileInput = document.getElementById('file');
+            fileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    handleImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Set up browse button click event listener
+            const uploadButton = document.getElementById('upload-button');
+            uploadButton.addEventListener('click', function (e) {
+                fileInput.click();
+            });
+        }
+
+        // Execute main function
+        main();
+    </script>
+</div>
+</body>
+</html>
+
 
