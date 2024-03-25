@@ -5,168 +5,144 @@
     Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-    <head>
-        <title>David Snyder Personal Page</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-        <link rel="stylesheet" href="assets/css/main.css" />
-        <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-        <style>
-            #image-container {
-                width: 300px;
-                height: 300px;
-                border: 1px solid #ccc;
-                margin: 20px auto;
-                overflow: hidden;
-                display: none;
-            }
-            #uploaded-image {
-                max-width: 100%;
-                max-height: 100%;
-                display: block;
-                margin: auto;
-            }
-            #upload-box {
-                border: 2px dashed #aaa;
-                padding: 20px;
-                text-align: center;
-                cursor: pointer;
-            }
-        </style>
-    </head>
-    <body class="is-preload">
+<head>
+    <title>David Snyder Personal Page</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <style>
+        #image-container {
+            width: 300px;
+            height: 300px;
+            border: 1px solid #ccc;
+            margin: 20px auto;
+            overflow: hidden;
+            display: none;
+        }
+        #uploaded-image {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            margin: auto;
+        }
+        #upload-box {
+            border: 2px dashed #aaa;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="is-preload">
 
-        <!-- Wrapper -->
-        <div id="wrapper" class="fade-in">
+<!-- Wrapper -->
+<div id="wrapper" class="fade-in">
 
-            <!-- Intro -->
-            <div id="intro">
-                <h1>Mathematics &cap; Computer Science</h1>
-            </div>
+    <!-- Intro -->
+    <div id="intro">
+        <h1>Mathematics &cap; Computer Science</h1>
+    </div>
 
-            <!-- Header -->
-            <header id="header">
-                <a href="mathcomp.html" class="logo"></a>
-            </header>
+    <!-- Header -->
+    <header id="header">
+        <a href="mathcomp.html" class="logo"></a>
+    </header>
 
-            <!-- Nav -->
-            <nav id="nav">
-                <ul class="links">
-                    <li><a href="index.html">About me</a></li>
-                    <li class="active"><a href="mathcomp.html">Mathematics &cap; Computer Science </a></li>
-                    <li><a href="mathematics.html">Mathematics</a></li>
-                </ul>
-                <ul class="icons">
+    <!-- Nav -->
+    <nav id="nav">
+        <ul class="links">
+            <li><a href="index.html">About me</a></li>
+            <li class="active"><a href="mathcomp.html">Mathematics &cap; Computer Science </a></li>
+            <li><a href="mathematics.html">Mathematics</a></li>
+        </ul>
+        <ul class="icons">
+            <li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+            <li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+        <!-- Drag and Drop Box -->
+        <div id="upload-box">
+            <h2>Drag & Drop Photo Here</h2>
+            <p>or</p>
+            <input type="file" id="file" accept="image/*" style="display: none;">
+            <button id="upload-button">Browse</button>
+        </div>
+
+        <!-- Image Container -->
+        <div id="image-container">
+            <img id="uploaded-image" src="#" alt="Uploaded Image">
+        </div>
+
+        <!-- Prediction Result -->
+        <section id="prediction-result" style="display: none;">
+            <h2>Prediction Result</h2>
+            <div id="result"></div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <section class="split contact">
+            <section>
+                <h3>Email</h3>
+                <p><a href="#">dsnyder2013@fau.edu</a></p>
+            </section>
+            <section>
+                <h3>Social</h3>
+                <ul class="icons alt">
                     <li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
                     <li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
                 </ul>
-            </nav>
+            </section>
+        </section>
+    </footer>
 
-            <!-- Main -->
-            <div id="main">
-                <!-- Drag and Drop Box -->
-                <div id="upload-box">
-                    <h2>Drag & Drop Photo Here</h2>
-                    <p>or</p>
-                    <input type="file" id="file" accept="image/*" style="display: none;">
-                    <button id="upload-button">Browse</button>
-                </div>
+    <!-- TensorFlow.js Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
+    <script>
+        // Load the TensorFlow.js model
+        async function loadModel() {
+            const model = await tf.loadLayersModel('model.json');
+            return model;
+        }
 
-                <!-- Image Container -->
-                <div id="image-container">
-                    <img id="uploaded-image" src="#" alt="Uploaded Image">
-                </div>
+        // Make predictions using the loaded model
+        async function predict(imageData, model) {
+            // Preprocess image data if necessary
+            // Perform prediction using the loaded model
+            const prediction = model.predict(imageData);
+            return prediction;
+        }
 
-                <!-- Prediction Result -->
-                <section id="prediction-result" style="display: none;">
-                    <h2>Prediction Result</h2>
-                    <div id="result"></div>
-                </section>
-            </div>
+        // Main function
+        async function main() {
+            // Load the model
+            const model = await loadModel();
 
-            <!-- Footer -->
-            <footer id="footer">
-                <section class="split contact">
-                    <section>
-                        <h3>Email</h3>
-                        <p><a href="#">dsnyder2013@fau.edu</a></p>
-                    </section>
-                    <section>
-                        <h3>Social</h3>
-                        <ul class="icons alt">
-                            <li><a href="https://www.linkedin.com/in/david-snyder-7027b3144/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
-                            <li><a href="https://github.com/davidsnyd3r" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-                        </ul>
-                    </section>
-                </section>
-            </footer>
+            // Function to handle drag and drop event
+            function handleDrop(event) {
+                event.preventDefault();
+                const file = event.dataTransfer.files[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    handleImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
 
-            <!-- TensorFlow.js Script -->
-            <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
-            <script>
-                // Load the TensorFlow.js model
-                async function loadModel() {
-                    const model = await tf.loadLayersModel('path/to/your/model.json');
-                    return model;
-                }
+            // Function to handle image display and prediction
+            async function handleImage(imageData) {
+                // Display the image
+                const img = document.createElement('img');
+                img.src = imageData;
+                img.onload = function () {
+                    document.getElementById('image-container').appendChild(img);
+                };
 
-                // Make predictions using the loaded model
-                async function predict(imageData, model) {
-                    // Preprocess image data if necessary
-                    // Perform prediction using the loaded model
-                    const prediction = model.predict(imageData);
-                    return prediction;
-                }
+                // Preprocess the image
+                const imgTensor = tf.browser.fromPixels(img).toFloat
 
-                // Main function
-                async function main() {
-                    // Load the model
-                    const model = await loadModel();
-
-                    // Function to handle drag and drop event
-                    function handleDrop(event) {
-                        event.preventDefault();
-                        const file = event.dataTransfer.files[0];
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            handleImage(e.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-
-                    // Function to handle image display and prediction
-                    async function handleImage(imageData) {
-                        // Display the image
-                        const img = document.createElement('img');
-                        img.src = imageData;
-                        img.onload = function () {
-                            document.getElementById('image-container').appendChild(img);
-                        };
-
-                        // Preprocess the image
-                        const imgTensor = tf.browser.fromPixels(img).toFloat().div(tf.scalar(255));
-
-                        // Make prediction
-                        const prediction = await predict(imgTensor.expandDims(0), model);
-
-                        // Display prediction result
-                        document.getElementById('result').innerText = 'Prediction: ' + prediction;
-
-                        // Show prediction result section
-                        document.getElementById('prediction-result').style.display = 'block';
-                    }
-
-                    // Set up drag and drop event listener
-                    const dropZone = document.getElementById('upload-box');
-                    dropZone.addEventListener('dragover', function (e) {
-                        e.preventDefault();
-                    });
-                    dropZone.addEventListener('drop', handleDrop);
-                }
-
-                // Execute main function
-                main();
-            </script>
-        </div>
-    </body>
-</html>
