@@ -45,7 +45,9 @@
         <div id="upload-box">
             <h2>Upload Photo</h2>
             <p>Click the button below to choose an image file.</p>
-            <input type="file" id="file" accept="image/*" style="display: none;">
+            <!-- File input -->
+            <input type="file" id="file" accept="image/*">
+            <!-- Browse button -->
             <button id="upload-button">Browse</button>
         </div>
 
@@ -124,7 +126,8 @@
                 // Set up event listener for browse button click
                 const uploadButton = document.getElementById('upload-button');
                 uploadButton.addEventListener('click', function () {
-                    fileInput.click(); // Trigger click event on file input
+                    // Trigger click event on file input
+                    fileInput.click();
                 });
             }
 
@@ -135,4 +138,3 @@
 </div>
 </body>
 </html>
-
