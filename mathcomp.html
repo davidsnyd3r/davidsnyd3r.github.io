@@ -70,7 +70,7 @@
     <script>
         // Function to load the model
         async function loadModel() {
-            const model = await tf.loadLayersModel('model.json');
+            const model = await tf.loadGraphModel('model.json');
             return model;
         }
 
@@ -113,7 +113,7 @@
                 const imgTensor = tf.browser.fromPixels(img).toFloat();
 
                 // Make prediction
-                const prediction = await model.predict(imgTensor.expandDims(0));
+                const prediction = model.predict(imgTensor.expandDims(0));
 
                 // Display prediction result
                 document.getElementById('result').innerText = 'Prediction: ' + prediction;
