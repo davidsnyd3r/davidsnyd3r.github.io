@@ -103,7 +103,7 @@
             const imgTensor = tf.browser.fromPixels(img).toFloat();
 
             // Make prediction
-            const prediction = await predict(imgTensor.expandDims(0), model);
+            const prediction = await predict(imgTensor.expandDims(0), window.model);
 
             // Display prediction result
             const predictionLabel = getPredictionLabel(prediction);
