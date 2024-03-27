@@ -74,13 +74,13 @@
             return model;
         }
 
-        // Set up event listener for file input change
-        document.getElementById('file').addEventListener('change', handleUpload);
-
         // Main function
         async function main() {
             // Load the model
             const model = await loadModel();
+
+            // Set up event listener for file input change
+            document.getElementById('file').addEventListener('change', handleUpload);
 
             // Function to handle image upload
             async function handleUpload(event) {
@@ -106,26 +106,12 @@
                     // Expand the dimensions to match the input shape expected by the model
                     const inputTensor = resizedImgTensor.expandDims();
                     // Make prediction
-                    const prediction = await model.predict(inputTensor);
-                    // Format and display prediction result
-                    displayPredictionResults(prediction);
+                    const prediction = await model.predict(inputTensor).data();
+                    // Display prediction result
+                    document.getElementById('result').innerText = 'Prediction: ' + prediction;
+                    // Show prediction result section
+                    document.getElementById('prediction-result').style.display = 'block';
                 };
-            }
-
-            // Function to format and display prediction result
-            function displayPredictionResults(prediction) {
-                // Placeholder function to format the prediction results
-                const formattedResults = formatPredictionResults(prediction);
-                // Display prediction result
-                document.getElementById('result').innerHTML = formattedResults;
-                // Show prediction result section
-                document.getElementById('prediction-result').style.display = 'block';
-            }
-
-            // Placeholder function to format prediction results
-            function formatPredictionResults(prediction) {
-                // Placeholder implementation to format prediction results
-                return 'Prediction: ' + prediction;
             }
         }
 
