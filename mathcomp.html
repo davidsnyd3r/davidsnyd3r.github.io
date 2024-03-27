@@ -68,6 +68,12 @@
     
     <!-- Script to handle file upload and prediction -->
     <script>
+        // Function to load the model
+        async function loadModel() {
+            const model = await tf.loadGraphModel('model.json');
+            return model;
+        }
+
         // Set up event listener for file input change
         const fileInput = document.getElementById('file');
         fileInput.addEventListener('change', handleUpload);
@@ -79,37 +85,46 @@
             fileInput.click();
         });
 
-        // Function to handle image upload
-        function handleUpload(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                handleImage(e.target.result);
-            };
-            reader.readAsDataURL(file);
+        // Main function
+        async function main() {
+            // Load the model
+            const model = await loadModel();
+
+            // Function to handle image upload
+            function handleUpload(event) {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    handleImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Function to handle image display and prediction
+            async function handleImage(imageData) {
+                // Display the image
+                const img = document.createElement('img');
+                img.src = imageData;
+                img.onload = async function () {
+                    document.getElementById('image-container').appendChild(img);
+                    // Preprocess the image
+                    const imgTensor = tf.browser.fromPixels(img).toFloat();
+                    // Resize the image to match the input size expected by the model
+                    const resizedImgTensor = tf.image.resizeBilinear(imgTensor, [HEIGHT, WIDTH]);
+                    // Expand the dimensions to match the input shape expected by the model
+                    const inputTensor = resizedImgTensor.expandDims();
+                    // Make prediction
+                    const prediction = await model.predict(inputTensor);
+                    // Display prediction result
+                    document.getElementById('result').innerText = 'Prediction: ' + prediction;
+                    // Show prediction result section
+                    document.getElementById('prediction-result').style.display = 'block';
+                };
+            }
         }
 
-        // Function to handle image display and prediction
-        async function handleImage(imageData) {
-            // Display the image
-            const img = document.createElement('img');
-            img.src = imageData;
-            img.onload = function () {
-                document.getElementById('image-container').appendChild(img);
-            };
-
-            // Preprocess the image
-            const imgTensor = tf.browser.fromPixels(img).toFloat();
-
-            // Make prediction (add your prediction code here)
-            const prediction = 'Your prediction goes here';
-
-            // Display prediction result
-            document.getElementById('result').innerText = 'Prediction: ' + prediction;
-
-            // Show prediction result section
-            document.getElementById('prediction-result').style.display = 'block';
-        }
+        // Execute main function
+        main();
     </script>
 </div>
 </body>
