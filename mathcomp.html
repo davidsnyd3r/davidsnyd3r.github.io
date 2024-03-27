@@ -46,7 +46,7 @@
             <h2>Upload Photo</h2>
             <p>Click the button below to choose an image file.</p>
             <!-- File input -->
-            <input type="file" id="file" accept="image/*">
+            <input type="file" id="file" accept="image/*" style="display: none;">
             <!-- Browse button -->
             <button id="upload-button">Select File</button>
         </div>
@@ -74,15 +74,11 @@
             return model;
         }
 
-        // Set up event listener for file input change
-        const fileInput = document.getElementById('file');
-        fileInput.addEventListener('change', handleUpload);
-
         // Set up event listener for browse button click
         const uploadButton = document.getElementById('upload-button');
         uploadButton.addEventListener('click', function () {
             // Trigger click event on file input
-            fileInput.click();
+            document.getElementById('file').click();
         });
 
         // Main function
@@ -91,14 +87,14 @@
             const model = await loadModel();
 
             // Function to handle image upload
-            function handleUpload(event) {
+            document.getElementById('file').addEventListener('change', async function(event) {
                 const file = event.target.files[0];
                 const reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = async function (e) {
                     handleImage(e.target.result);
                 };
                 reader.readAsDataURL(file);
-            }
+            });
 
             // Function to handle image display and prediction
             async function handleImage(imageData) {
@@ -129,3 +125,4 @@
 </div>
 </body>
 </html>
+
