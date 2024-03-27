@@ -44,7 +44,7 @@
         <!-- Upload Box -->
         <div id="upload-box">
             <h2>Upload Photo</h2>
-            <p>Click here to choose an image file.</p>
+            <p>Click the button below to choose an image file.</p>
             <!-- File input -->
             <input type="file" id="file" accept="image/*" style="display: none;">
             <!-- Browse button -->
@@ -66,77 +66,69 @@
     <!-- TensorFlow.js Script -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
     <script>
-        // Execute JavaScript code after the DOM has fully loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            // Load the TensorFlow.js model
-            async function loadModel() {
-                const model = await tf.loadLayersModel('model.json');
-                return model;
-            }
+        // Load the TensorFlow.js model
+        async function loadModel() {
+            const model = await tf.loadLayersModel('model.json');
+            return model;
+        }
 
-            // Make predictions using the loaded model
-            async function predict(imageData, model) {
-                // Preprocess image data if necessary
-                // Perform prediction using the loaded model
-                const prediction = model.predict(imageData);
-                return prediction;
-            }
+        // Make predictions using the loaded model
+        async function predict(imageData, model) {
+            // Preprocess image data if necessary
+            // Perform prediction using the loaded model
+            const prediction = model.predict(imageData);
+            return prediction;
+        }
 
-            // Main function
-            async function main() {
-                // Load the model
-                const model = await loadModel();
+        // Function to handle image upload
+        function handleUpload(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                handleImage(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
 
-                // Function to handle image upload
-                function handleUpload(event) {
-                    const file = event.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        handleImage(e.target.result);
-                    };
-                    reader.readAsDataURL(file);
-                }
+        // Function to handle image display and prediction
+        async function handleImage(imageData) {
+            // Display the image
+            const img = document.createElement('img');
+            img.src = imageData;
+            img.onload = function () {
+                document.getElementById('image-container').appendChild(img);
+            };
 
-                // Function to handle image display and prediction
-                async function handleImage(imageData) {
-                    // Display the image
-                    const img = document.createElement('img');
-                    img.src = imageData;
-                    img.onload = function () {
-                        document.getElementById('image-container').appendChild(img);
-                    };
+            // Preprocess the image
+            const imgTensor = tf.browser.fromPixels(img).toFloat();
 
-                    // Preprocess the image
-                    const imgTensor = tf.browser.fromPixels(img).toFloat();
+            // Make prediction
+            const prediction = await predict(imgTensor.expandDims(0), model);
 
-                    // Make prediction
-                    const prediction = await predict(imgTensor.expandDims(0), model);
+            // Display prediction result
+            const predictionLabel = getPredictionLabel(prediction);
+            document.getElementById('result').innerText = 'Prediction: ' + predictionLabel;
 
-                    // Display prediction result
-                    const predictionLabel = getPredictionLabel(prediction);
-                    document.getElementById('result').innerText = 'Prediction: ' + predictionLabel;
+            // Show prediction result section
+            document.getElementById('prediction-result').style.display = 'block';
+        }
 
-                    // Show prediction result section
-                    document.getElementById('prediction-result').style.display = 'block';
-                }
+        // Set up event listener for file input change
+        const fileInput = document.getElementById('file');
+        fileInput.addEventListener('change', handleUpload);
 
-                // Set up event listener for file input change
-                const fileInput = document.getElementById('file');
-                fileInput.addEventListener('change', handleUpload);
+        // Set up event listener for browse button click
+        const uploadButton = document.getElementById('upload-button');
+        uploadButton.addEventListener('click', function () {
+            // Trigger click event on file input
+            fileInput.click();
+        });
 
-                // Set up event listener for browse button click
-                const uploadButton = document.getElementById('upload-button');
-                uploadButton.addEventListener('click', function () {
-                    // Trigger click event on file input
-                    fileInput.click();
-                });
-
-                // Automatically trigger file input click event
-                fileInput.click();
-            }
-
-            // Execute main function
-            main();
+        // Load the model once the DOM content is loaded
+        document.addEventListener('DOMContentLoaded', async function () {
+            const model = await loadModel();
+            // Store model in a global variable for later use
+            window.model = model;
         });
     </script>
 </div>
