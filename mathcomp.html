@@ -63,55 +63,15 @@
         </section>
     </div>
 
-    <!-- TensorFlow.js Script -->
+    <!-- Load TensorFlow.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
+    
+    <!-- Script to handle file upload and prediction -->
     <script>
-        // Load the TensorFlow.js model
+        // Function to load the model
         async function loadModel() {
             const model = await tf.loadLayersModel('model.json');
             return model;
-        }
-
-        // Make predictions using the loaded model
-        async function predict(imageData, model) {
-            // Preprocess image data if necessary
-            // Perform prediction using the loaded model
-            const prediction = model.predict(imageData);
-            return prediction;
-        }
-
-        // Function to handle image upload
-        function handleUpload(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                handleImage(e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Function to handle image display and prediction
-        async function handleImage(imageData) {
-            // Display the image
-            const img = document.createElement('img');
-            img.src = imageData;
-            img.onload = function () {
-                document.getElementById('image-container').appendChild(img);
-            };
-
-            // Preprocess the image
-            const imgTensor = tf.browser.fromPixels(img).toFloat();
-
-            // Make prediction
-            const prediction = await predict(imgTensor.expandDims(0), window.model);
-            console.log('Prediction:', prediction); // Log the prediction result
-
-            // Display prediction result
-            const predictionLabel = getPredictionLabel(prediction);
-            document.getElementById('result').innerText = 'Prediction: ' + predictionLabel;
-
-            // Show prediction result section
-            document.getElementById('prediction-result').style.display = 'block';
         }
 
         // Set up event listener for file input change
@@ -125,12 +85,46 @@
             fileInput.click();
         });
 
-        // Load the model once the DOM content is loaded
-        document.addEventListener('DOMContentLoaded', async function () {
+        // Main function
+        async function main() {
+            // Load the model
             const model = await loadModel();
-            // Store model in a global variable for later use
-            window.model = model;
-        });
+
+            // Function to handle image upload
+            function handleUpload(event) {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    handleImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Function to handle image display and prediction
+            async function handleImage(imageData) {
+                // Display the image
+                const img = document.createElement('img');
+                img.src = imageData;
+                img.onload = function () {
+                    document.getElementById('image-container').appendChild(img);
+                };
+
+                // Preprocess the image
+                const imgTensor = tf.browser.fromPixels(img).toFloat();
+
+                // Make prediction
+                const prediction = await model.predict(imgTensor.expandDims(0));
+
+                // Display prediction result
+                document.getElementById('result').innerText = 'Prediction: ' + prediction;
+
+                // Show prediction result section
+                document.getElementById('prediction-result').style.display = 'block';
+            }
+        }
+
+        // Execute main function
+        main();
     </script>
 </div>
 </body>
