@@ -104,6 +104,7 @@
 
             // Make prediction
             const prediction = await predict(imgTensor.expandDims(0), window.model);
+            console.log('Prediction:', prediction); // Log the prediction result
 
             // Display prediction result
             const predictionLabel = getPredictionLabel(prediction);
