@@ -33,9 +33,8 @@
     </div>
     
     <script type="text/babel">
-      import React, { useState, useEffect, useRef } from 'react';
-import * as d3 from 'd3';
-
+     
+const { useState, useEffect, useRef } = React;
 const ImprovedRegionVisualization = () => {
   const svgRef = useRef(null);
   const [viewAngle, setViewAngle] = useState(30);
@@ -579,7 +578,7 @@ export default ImprovedRegionVisualization;
         
         // Then render it:
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ImprovedRegionVisualization />);
+root.render(React.createElement(ImprovedRegionVisualization));
     </script>
 </body>
 </html>
