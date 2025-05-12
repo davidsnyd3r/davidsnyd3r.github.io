@@ -3,84 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Region Visualization - Debug</title>
-    <!-- Load React -->
-    <script src="https://unpkg.com/react@18/umd/react.development.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.min.js"></script>
-    <!-- Load D3.js -->
+    <title>3D Region Visualization</title>
+    <!-- Updated React script URLs -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <!-- Load Babel for JSX -->
+    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 900px;
+            width: 100%;
         }
-        .debug-info {
-            margin: 20px 0;
-            padding: 10px;
-            background-color: #f8f8f8;
-            border: 1px solid #ddd;
+        h1 {
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>3D Region Visualization - Debug</h1>
-        
-        <!-- Debug info display -->
-        <div class="debug-info">
-            <h3>Debug Information:</h3>
-            <div id="debug-output">Initializing...</div>
-        </div>
-        
-        <!-- Visualization container -->
+        <h1>3D Region Visualization</h1>
         <div id="root"></div>
     </div>
     
     <script type="text/babel">
-        // Update debug info
-        function debug(message) {
-            const debugOutput = document.getElementById('debug-output');
-            debugOutput.innerHTML += `<p>${message}</p>`;
-        }
+        // Use React global variables instead of imports
+        const { useState, useEffect, useRef } = React;
         
-        debug("Script started");
-        
-        // Simple React component for testing
-        const SimpleTest = () => {
-            debug("Rendering SimpleTest component");
-            const [count, setCount] = React.useState(0);
-            
-            debug("SimpleTest component rendered successfully");
+        const SimpleVisualization = () => {
+            const [count, setCount] = useState(0);
             
             return (
                 <div>
-                    <h2>React is working!</h2>
-                    <p>This is a simple test component.</p>
+                    <h2>React is working correctly!</h2>
+                    <p>This is a basic React component test.</p>
                     <p>Count: {count}</p>
                     <button onClick={() => setCount(count + 1)}>
                         Increment
                     </button>
+                    <p>Now that we know React is working, we can add the full visualization code.</p>
                 </div>
             );
         };
         
-        // Try to render the component
-        try {
-            debug("Attempting to render React component");
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(<SimpleTest />);
-            debug("React component rendered successfully");
-        } catch (error) {
-            debug(`Error rendering React component: ${error.message}`);
-            console.error(error);
-        }
+        // Render the component
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SimpleVisualization />);
     </script>
 </body>
 </html>
