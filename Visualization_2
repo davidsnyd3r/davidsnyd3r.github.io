@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Region Visualization</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/d3@7/dist/d3.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .visualization-container {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .controls {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 8px 0 15px 0;
+        }
+        label {
+            font-weight: 500;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .help-text {
+            background-color: #e7f3ff;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        ul {
+            margin-top: 8px;
+            padding-left: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>3D Region Visualization</h1>
+        <div id="root" class="visualization-container"></div>
+    </div>
+
+    <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    
+    const RegionVisualization = () => {
+      const svgRef = useRef(null);
+      const [viewAngle, setViewAngle] = useState(30);
+      const [elevationAngle, setElevationAngle] = useState(25);
+      const [zoom, setZoom] = useState(1);
+      const [showNormalPoints, setShowNormalPoints] = useState(true);
+      const [showVertexLabels, setShowVertexLabels] = useState(false);
+      const [showBlackPoints, setShowBlackPoints] = useState(false);
+      const [showVertices, setShowVertices] = useState(false);
+      const [isDragging, setIsDragging] = useState(false);
+      const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
+      const [hoveredPoint, setHoveredPoint] = useState(null);
+
+      // Function to check if a point satisfies all constraints
+      const satisfiesConstraints = (x, y, z) => {
+        if (x < 0 || z < 0 || y < 0) return false;
+        if (y < x || y < z) return false;
+        if (Math.abs(z - x) > 2) return false;
+        if (Math.abs(y - x - z) > 3) return false;
+        if (Math.abs(y - 2*x) > 3) return false;
+        if (Math.abs(y - 2*z) > 3) return false;
+        return true;
+      };
+
+      useEffect(() => {
+        if (!svgRef.current) return;
+
+        // Clear previous SVG content
+        d3.select(svgRef.current).selectAll("*").remove();
+
+        // SVG setup
+        const width = 600;
+        const height = 500;
+        const svg = d3.select(svgRef.current)
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+        // Create a group for all 3D elements
+        const g = svg.append("g")
+          .attr("transform", `translate(${width/2}, ${height/2})`);
+
+        // Generate a comprehensive set of vertices to better represent the region
+        const generateGridPoints = () => {
+          const gridPoints = [];
+          const step = 0.5;
+          const xMax = 6;
+          const yMax = 12;
+          const zMax = 6;
+
+          for (let x = 0; x <= xMax; x += step) {
+            for (let z = 0; z <= zMax; z += step) {
+              // Only check points that might be in the region based on |z-x| ≤ 2
+              if (Math.abs(z - x) <= 2) {
+                // Calculate valid y-range based on constraints
+                const yMin = Math.max(0, x, z, x+z-3, 2*x-3, 2*z-3);
+                const yMaxVal = Math.min(yMax, x+z+3, 2*x+3, 2*z+3);
+
+                if (yMin <= yMaxVal) {
+                  // Sample y-values within valid range
+                  for (let y = yMin; y <= yMaxVal; y += step) {
+                    if (satisfiesConstraints(x, y, z)) {
+                      if (Math.random() < 0.1) { // Sample 10% of points for performance
+                        gridPoints.push([x, y, z]);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          return gridPoints;
+        };
+
+        // Generate grid points for the region
+        const gridPoints = generateGridPoints();
+
+        // Define key vertices to outline the region clearly
+        const keyVertices = [
+          [0, 0, 0],    // Origin
+          [0, 3, 0],    // Where y = 2x+3 at x=0, z=0
+          [0, 3, 2],    // Where constraints intersect
+          [2, 3, 0],    // Where constraints intersect
+          [3, 3, 3],    // Where y = x = z
+          [3, 6, 3],    // Where y = x+z, y = 2x
+          [3, 9, 3],    // Where constraints intersect
+          [1, 3, 3],    // Additional point
+          [3, 3, 1],    // Additional point (that was questioned)
+          [2, 4, 2],    // Additional point
+          [4, 4, 2],    // Additional extension point
+          [4, 8, 4],    // Additional extension point
+          [4, 10, 6],   // Additional extension point
+          [0, 0, 2],    // Additional corner point
+          [2, 0, 0]     // Additional corner point
+        ];
+
+        // Ensure all key vertices satisfy constraints
+        const validKeyVertices = keyVertices.filter(v => satisfiesConstraints(v[0], v[1], v[2]));
+
+        // Define special points with their colors
+        const specialPoints = [
+          { point: [2, 4, 2], color: "red", label: "Radical Vector" },
+          { point: [0, 3, 3], color: "green", label: "Right Tube" },
+          { point: [1, 3, 3], color: "green", label: "Right Tube" },
+          { point: [2, 4, 3], color: "green", label: "Right Tube" },
+          { point: [3, 3, 0], color: "purple", label: "Left Tube" },
+          { point: [3, 3, 1], color: "purple", label: "Left Tube" },
+          { point: [3, 4, 2], color: "purple", label: "Left Tube" },
+          { point: [0, 3, 0], color: "blue", label: "Central Tube" },
+          { point: [2, 6, 2], color: "blue", label: "Central Tube" },
+          { point: [2, 5, 2], color: "blue", label: "Central Tube" }
+        ];
+
+        // Define black points separately for toggle control
+        const blackPoints = [
+          { point: [0, 1, 0], color: "black", label: "Root" },
+          { point: [0, 1, 1], color: "black", label: "Root" },
+          { point: [0, 2, 1], color: "black", label: "Root" },
+          { point: [1, 1, 0], color: "black", label: "Root" },
+          { point: [0, 2, 0], color: "black", label: "Root" },
+          { point: [0, 2, 2], color: "black", label: "Root" },
+          { point: [1, 2, 0], color: "black", label: "Root" },
+          { point: [1, 1, 1], color: "black", label: "Root" },
+          { point: [0, 3, 2], color: "black", label: "Root" },
+          { point: [1, 3, 0], color: "black", label: "Root" },
+          { point: [1, 2, 2], color: "black", label: "Root" },
+          { point: [1, 3, 2], color: "black", label: "Root" },
+          { point: [0, 3, 1], color: "black", label: "Root" },
+          { point: [1, 2, 1], color: "black", label: "Root" },
+          { point: [1, 3, 1], color: "black", label: "Root" },
+          { point: [1, 4, 1], color: "black", label: "Root" },
+          { point: [1, 4, 2], color: "black", label: "Root" },
+          { point: [1, 5, 2], color: "black", label: "Root" },
+          { point: [1, 5, 1], color: "black", label: "Root" },
+          { point: [1, 5, 3], color: "black", label: "Root" }
+        ];
+
+        // Missing points (Pink)
+        const missingPoints = [
+          { point: [0, 0, 0], color: "pink", label: "Missing Point" },
+          { point: [1, 4, 3], color: "pink", label: "Missing Point" },
+          { point: [3, 4, 1], color: "pink", label: "Missing Point" },
+          { point: [3, 8, 5], color: "pink", label: "Missing Point" },
+          { point: [5, 8, 3], color: "pink", label: "Missing Point" }
+        ];
+
+        // Invalid points
+        const invalidPoints = [
+          { point: [2, 4, 4], color: "red", label: "Invalid Point" },
+          { point: [0, 4, 2], color: "red", label: "Invalid Point" },
+          { point: [2, 4, 0], color: "red", label: "Invalid Point" },
+          { point: [4, 4, 2], color: "red", label: "Invalid Point" }
+        ];
+
+        // Use d3.delaunay to create a proper triangulation of the key points
+        const createFaces = () => {
+          // Use a subset of grid points for triangulation to avoid too many faces
+          const sampleRate = 5; // Sample every 5th point
+          const sampledPoints = gridPoints.filter((_, i) => i % sampleRate === 0);
+
+          // Combine key vertices with sampled points
+          const allPoints = [...validKeyVertices, ...sampledPoints];
+
+          try {
+            // Project the 3D points to 2D using our current view for triangulation
+            const points2D = allPoints.map(p => {
+              const projected = project(p[0], p[1], p[2]);
+              return [projected.x, projected.y];
+            });
+
+            // Create a Delaunay triangulation
+            const delaunay = d3.Delaunay.from(points2D);
+            const triangles = delaunay.triangles;
+
+            // Convert the triangulation back to 3D faces
+            const faces = [];
+            for (let i = 0; i < triangles.length; i += 3) {
+              const face = [
+                allPoints[triangles[i]],
+                allPoints[triangles[i + 1]],
+                allPoints[triangles[i + 2]]
+              ];
+              faces.push(face);
+            }
+
+            return faces;
+          } catch (e) {
+            console.error("Error creating triangulation:", e);
+            // Fallback to a basic set of faces if triangulation fails
+            return [
+              [validKeyVertices[0], validKeyVertices[1], validKeyVertices[2]],
+              [validKeyVertices[0], validKeyVertices[1], validKeyVertices[3]],
+              [validKeyVertices[0], validKeyVertices[2], validKeyVertices[4]],
+              [validKeyVertices[0], validKeyVertices[3], validKeyVertices[4]],
+              [validKeyVertices[1], validKeyVertices[2], validKeyVertices[5]],
+              [validKeyVertices[2], validKeyVertices[4], validKeyVertices[5]],
+              [validKeyVertices[3], validKeyVertices[4], validKeyVertices[6]],
+              [validKeyVertices[4], validKeyVertices[5], validKeyVertices[6]]
+            ];
+          }
+        };
+
+        // Define scales
+        const xScale = d3.scaleLinear().domain([-1, 10]).range([-150 * zoom, 150 * zoom]);
+        const yScale = d3.scaleLinear().domain([-1, 12]).range([150 * zoom, -150 * zoom]);
+        const zScale = d3.scaleLinear().domain([-1, 10]).range([-150 * zoom, 150 * zoom]);
+
+        // Function to project 3D to 2D
+        const project = (x, y, z) => {
+          // Convert degrees to radians
+          const angleRad = (viewAngle * Math.PI) / 180;
+          const elevationRad = (elevationAngle * Math.PI) / 180;
+
+          // Isometric-like projection with variable angles
+          const xRotated = x * Math.cos(angleRad) - z * Math.sin(angleRad);
+          const zRotated = x * Math.sin(angleRad) + z * Math.cos(angleRad);
+
+          const yRotated = y * Math.cos(elevationRad) - zRotated * Math.sin(elevationRad);
+          const zFinal = y * Math.sin(elevationRad) + zRotated * Math.cos(elevationRad);
+
+          return {
+            x: xScale(xRotated),
+            y: yScale(yRotated),
+            z: zFinal  // Used for depth calculation
+          };
+        };
+
+        // Create the faces for the polyhedron
+        const faces = createFaces();
+
+        // Draw coordinate axes
+        const axisLength = 10;
+        const axes = [
+          { start: [0,0,0], end: [axisLength,0,0], color: 'red', label: 'X' },
+          { start: [0,0,0], end: [0,axisLength,0], color: 'green', label: 'Y' },
+          { start: [0,0,0], end: [0,0,axisLength], color: 'blue', label: 'Z' }
+        ];
+
+        axes.forEach(axis => {
+          const start = project(...axis.start);
+          const end = project(...axis.end);
+
+          g.append("line")
+            .attr("x1", start.x)
+            .attr("y1", start.y)
+            .attr("x2", end.x)
+            .attr("y2", end.y)
+            .attr("stroke", axis.color)
+            .attr("stroke-width", 2);
+
+          g.append("text")
+            .attr("x", end.x + 10)
+            .attr("y", end.y)
+            .text(axis.label)
+            .attr("fill", axis.color)
+            .attr("font-size", "14px");
+        });
+
+        // Draw the polyhedron faces with gradient coloring
+        const getFaceDepth = face => {
+          // Calculate average z-depth of the face's projected points
+          const projectedPoints = face.map(point => project(point[0], point[1], point[2]));
+          return d3.mean(projectedPoints, d => d.z);
+        };
+
+        // Sort faces by depth for proper rendering
+        const sortedFaces = [...faces].sort((a, b) => getFaceDepth(a) - getFaceDepth(b));
+
+        // Create a color scale based on face depth
+        const colorScale = d3.scaleLinear()
+          .domain([d3.min(sortedFaces, getFaceDepth), d3.max(sortedFaces, getFaceDepth)])
+          .range(["#00FFFF", "#0088AA"]) // Cyan to darker blue
+          .interpolate(d3.interpolateHcl);
+
+        // Draw faces with depth-based coloring
+        sortedFaces.forEach(face => {
+          const projectedFace = face.map(point => project(point[0], point[1], point[2]));
+          const depth = getFaceDepth(face);
+
+          // Create a path for the face
+          const pathGenerator = d3.line()
+            .x(d => d.x)
+            .y(d => d.y)
+            .curve(d3.curveLinearClosed);
+
+          g.append("path")
+            .datum(projectedFace)
+            .attr("d", pathGenerator)
+            .attr("fill", colorScale(depth))
+            .attr("fill-opacity", 0.7)
+            .attr("stroke", "rgba(0,0,0,0.3)")
+            .attr("stroke-width", 0.5);
+        });
+
+        // Draw and label key vertices (if enabled)
+        if (showVertices) {
+          validKeyVertices.forEach(vertex => {
+            const projected = project(vertex[0], vertex[1], vertex[2]);
+
+            g.append("circle")
+              .attr("cx", projected.x)
+              .attr("cy", projected.y)
+              .attr("r", 3.5)
+              .attr("fill", "orange")
+              .attr("stroke", "black")
+              .attr("stroke-width", 0.5)
+              .on("mouseover", () => {
+                setHoveredPoint({
+                  x: vertex[0],
+                  y: vertex[1],
+                  z: vertex[2],
+                  screenX: projected.x,
+                  screenY: projected.y,
+                  type: "vertex",
+                  label: "Vertex"
+                });
+              })
+              .on("mouseout", () => {
+                setHoveredPoint(null);
+              });
+
+            if (showVertexLabels) {
+              g.append("text")
+                .attr("x", projected.x + 5)
+                .attr("y", projected.y - 5)
+                .text(`(${vertex[0]},${vertex[1]},${vertex[2]})`)
+                .attr("font-size", "10px")
+                .attr("fill", "orange");
+            }
+          });
+        }
+
+        // Helper function to draw a point with hover
+        const drawPoint = (pointData) => {
+          const { point, color, label } = pointData;
+          const projected = project(point[0], point[1], point[2]);
+          const isValid = satisfiesConstraints(point[0], point[1], point[2]);
+          
+          if ((label.includes("Invalid") || !isValid) && !showNormalPoints) return;
+          
+          if (label.includes("Invalid") || !isValid) {
+            // Draw as star for invalid points
+            const createStar = (cx, cy, size) => {
+              const points = 5;
+              const outerRadius = size;
+              const innerRadius = size / 2;
+              let path = "";
+              
+              for (let i = 0; i < points * 2; i++) {
+                const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                const angle = (Math.PI / points) * i;
+                const x = cx + radius * Math.sin(angle);
+                const y = cy + radius * Math.cos(angle);
+                
+                path += (i === 0 ? "M" : "L") + x + "," + y;
+              }
+              
+              return path + "Z";
+            };
+            
+            g.append("path")
+              .attr("d", createStar(projected.x, projected.y, 7))
+              .attr("fill", "red")
+              .attr("stroke", "white")
+              .attr("stroke-width", 1)
+              .on("mouseover", () => {
+                setHoveredPoint({
+                  x: point[0],
+                  y: point[1],
+                  z: point[2],
+                  screenX: projected.x,
+                  screenY: projected.y,
+                  type: "invalid",
+                  label: label
+                });
+              })
+              .on("mouseout", () => {
+                setHoveredPoint(null);
+              });
+          } else {
+            g.append("circle")
+              .attr("cx", projected.x)
+              .attr("cy", projected.y)
+              .attr("r", label.includes("Root") ? 2.5 : 5)
+              .attr("fill", color)
+              .attr("stroke", "black")
+              .attr("stroke-width", 0.5)
+              .on("mouseover", () => {
+                setHoveredPoint({
+                  x: point[0],
+                  y: point[1],
+                  z: point[2],
+                  screenX: projected.x,
+                  screenY: projected.y,
+                  type: label.toLowerCase().replace(" ", ""),
+                  label: label
+                });
+              })
+              .on("mouseout", () => {
+                setHoveredPoint(null);
+              });
+          }
+        };
+
+        // Draw special points
+        specialPoints.forEach(sp => {
+          drawPoint(sp);
+        });
+
+        // Draw black points if toggle is enabled
+        if (showBlackPoints) {
+          blackPoints.forEach(bp => {
+            drawPoint(bp);
+          });
+        }
+        
+        // Draw missing points
+        missingPoints.forEach(mp => {
+          drawPoint(mp);
+        });
+        
+        // Draw invalid points
+        invalidPoints.forEach(ip => {
+          drawPoint(ip);
+        });
+
+        // Add constraints text
+        svg.append("text")
+          .attr("x", 10)
+          .attr("y", 20)
+          .text("Constraints:")
+          .attr("font-weight", "bold");
+
+        const constraints = [
+          '|z-x| ≤ 2',
+          '|y-x-z| ≤ 3',
+          '|y-2x| ≤ 3',
+          '|y-2z| ≤ 3',
+          'y ≥ 0, y ≥ x, y ≥ z',
+          'x ≥ 0, z ≥ 0'
+        ];
+
+        constraints.forEach((constraint, i) => {
+          svg.append("text")
+            .attr("x", 10)
+            .attr("y", 40 + i * 15)
+            .text(constraint)
+            .attr("font-size", "12px");
+        });
+
+        // Add a legend for the special points
+        svg.append("text")
+          .attr("x", width - 150)
+          .attr("y", 20)
+          .text("Special Points:")
+          .attr("font-weight", "bold");
+
+        const colors = ["red", "green", "purple", "blue", "black", "pink"];
+        const labels = ["Radical Vector", "Right Tube", "Left Tube", "Central Tube", "Roots", "Missing Points"];
+
+        colors.forEach((color, i) => {
+          svg.append("circle")
+            .attr("cx", width - 140)
+            .attr("cy", 40 + i * 20)
+            .attr("r", 5)
+            .attr("fill", color);
+
+          svg.append("text")
+            .attr("x", width - 125)
+            .attr("y", 43 + i * 20)
+            .text(labels[i])
+            .attr("font-size", "10px");
+        });
+
+      }, [viewAngle, elevationAngle, zoom, showVertexLabels, showBlackPoints, showVertices, showNormalPoints]);
+
+      // Handle mouse events for rotation
+      const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setLastMousePosition({ x: e.clientX, y: e.clientY });
+      };
+
+      const handleMouseMove = (e) => {
+        if (!isDragging) return;
+
+        const deltaX = e.clientX - lastMousePosition.x;
+        const deltaY = e.clientY - lastMousePosition.y;
+
+        setViewAngle((prev) => (prev + deltaX * 0.5) % 360);
+        setElevationAngle((prev) => {
+          const newAngle = prev - deltaY * 0.5;
+          return Math.max(0, Math.min(90, newAngle));
+        });
+
+        setLastMousePosition({ x: e.clientX, y: e.clientY });
+      };
+
+      const handleMouseUp = () => {
+        setIsDragging(false);
+      };
+
+      const handleWheel = (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        setZoom((prev) => Math.max(0.5, Math.min(3, prev + delta)));
+      };
+
+      return (
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%'}}>
+          <div 
+            style={{
+              position: 'relative',
+              border: '1px solid #ccc',
+              backgroundColor: '#f8f8f8', 
+              cursor: isDragging ? 'grabbing' : 'grab', 
+              width: '600px', 
+              height: '500px',
+              marginBottom: '20px'
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onWheel={handleWheel}
+          >
+            <div ref={svgRef} style={{width: '100%', height: '100%'}} />
+            
+            {hoveredPoint && (
+              <div 
+                style={{
+                  position: 'absolute',
+                  left: hoveredPoint.screenX + 10,
+                  top: hoveredPoint.screenY - 30,
+                  backgroundColor: 'black',
+                  color: 'white',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  pointerEvents: 'none',
+                  zIndex: 1000,
+                  borderLeft: 
+                    hoveredPoint.type.includes("right") ? "3px solid green" : 
+                    hoveredPoint.type.includes("left") ? "3px solid purple" : 
+                    hoveredPoint.type.includes("central") ? "3px solid blue" :
+                    hoveredPoint.type.includes("radical") ? "3px solid red" :
+                    hoveredPoint.type.includes("root") ? "3px solid black" :
+                    hoveredPoint.type.includes("missing") ? "3px solid pink" :
+                    hoveredPoint.type.includes("vertex") ? "3px solid orange" :
+                    "3px solid red"
+                }}
+              >
+                ({hoveredPoint.x}, {hoveredPoint.y}, {hoveredPoint.z})
+                <span style={{marginLeft: '5px'}}>({hoveredPoint.label})</span>
+              </div>
+            )}
+          </div>
+
+          <div className="controls" style={{width: '100%', maxWidth: '600px'}}>
+            <div style={{marginBottom: '15px'}}>
+              <label>Rotation Angle: {viewAngle}°</label>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={viewAngle}
+                onChange={(e) => setViewAngle(parseInt(e.target.value))}
+              />
+            </div>
+
+            <div style={{marginBottom: '15px'}}>
+              <label>Elevation Angle: {elevationAngle}°</label>
+              <input
+                type="range"
+                min="0"
+                max="90"
+                value={elevationAngle}
+                onChange={(e) => setElevationAngle(parseInt(e.target.value))}
+              />
+            </div>
+
+            <div style={{marginBottom: '15px'}}>
+              <label>Zoom: {zoom.toFixed(1)}x</label>
+              <input
+                type="range"
+                min="0.5"
+                max="3"
+                step="0.1"
+                value={zoom}
+                onChange={(e) => setZoom(parseFloat(e.target.value))}
+              />
+            </div>
+
+            <div className="checkbox-group">
+              <label style={{display: 'flex', alignItems: 'center'}}>
+                <input
+                  type="checkbox"
+                  checked={showVertices}
+                  onChange={() => setShowVertices(!showVertices)}
+                  style={{marginRight: '5px'}}
+                />
+                <span>Show Vertices</span>
+              </label>
+
+              <label style={{display: 'flex', alignItems: 'center'}}>
+                <input
+                  type="checkbox"
+                  checked={showVertexLabels}
+                  onChange={() => setShowVertexLabels(!showVertexLabels)}
+                  disabled={!showVertices}
+                  style={{marginRight: '5px'}}
+                />
+                <span>Show Vertex Labels</span>
+              </label>
+
+              <label style={{display: 'flex', alignItems: 'center'}}>
+                <input
+                  type="checkbox"
+                  checked={showBlackPoints}
+                  onChange={() => setShowBlackPoints(!showBlackPoints)}
+                  style={{marginRight: '5px'}}
+                />
+                <span>Show Root Points</span>
+              </label>
+              
+              <label style={{display: 'flex', alignItems: 'center'}}>
+                <input
+                  type="checkbox"
+                  checked={showNormalPoints}
+                  onChange={() => setShowNormalPoints(!showNormalPoints)}
+                  style={{marginRight: '5px'}}
+                />
+                <span>Show Invalid Points</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="help-text">
+            <p><strong>Interactive Controls:</strong></p>
+            <ul>
+              <li>Click and drag to rotate the view</li>
+              <li>Use mouse wheel to zoom in/out</li>
+              <li>Use the sliders to precisely control angles and zoom</li>
