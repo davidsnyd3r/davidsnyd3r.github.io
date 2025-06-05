@@ -105,6 +105,20 @@
             return iterations;
           };
 
+          // Generate transformed points for invalid points (don't filter by constraints)
+          const generateTransformedInvalidPoints = (originalPoints, maxY = 30) => {
+            const iterations = {};
+            for (let i = 1; i <= 4; i++) {
+              iterations[i] = originalPoints
+                .map(point => {
+                  const transformed = transformPoint(point, i);
+                  return transformed[1] <= maxY ? transformed : null; // Only filter by maxY
+                })
+                .filter(Boolean);
+            }
+            return iterations;
+          };
+
           // Process all points
           const validRightTubePoints = rightTubePoints.filter(point => satisfiesConstraints(...point));
           const validLeftTubePoints = leftTubePoints.filter(point => satisfiesConstraints(...point));
@@ -118,7 +132,7 @@
           const transformedRadicalVector = generateTransformedPoints(validRadicalVectorPoints);
           const transformedRoots = generateTransformedPoints(rootPoints);
           const transformedMissingPoints = generateTransformedPoints(missingPoints);
-          const transformedInvalidPoints = generateTransformedPoints(invalidPoints);
+          const transformedInvalidPoints = generateTransformedInvalidPoints(invalidPoints);
 
           // Invalid special points
           const invalidSpecialPoints = [
@@ -127,7 +141,7 @@
             ...centralTubePoints.filter(p => !satisfiesConstraints(...p)),
             ...radicalVectorPoints.filter(p => !satisfiesConstraints(...p))
           ];
-          const transformedInvalidSpecialPoints = generateTransformedPoints(invalidSpecialPoints);
+          const transformedInvalidSpecialPoints = generateTransformedInvalidPoints(invalidSpecialPoints);
 
           useEffect(() => {
             if (!svgRef.current) return;
