@@ -15,7 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-4">
-    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <div id="root"></div>
     </div>
 
@@ -136,7 +136,7 @@
             d3.select(svgRef.current).selectAll("*").remove();
             
             // SVG setup
-            const width = 800;
+            const width = 1000;
             const height = 700;
             const svg = d3.select(svgRef.current)
               .append("svg")
@@ -148,8 +148,8 @@
               .attr("transform", `translate(${width/2}, ${height/2})`);
             
             // Define scales
-            const xScale = d3.scaleLinear().domain([-1, 15]).range([-200 * zoom, 200 * zoom]);
-            const yScale = d3.scaleLinear().domain([-1, 25]).range([200 * zoom, -200 * zoom]);
+            const xScale = d3.scaleLinear().domain([-1, 15]).range([-400 * zoom, 400 * zoom]);
+            const yScale = d3.scaleLinear().domain([-1, 25]).range([300 * zoom, -300 * zoom]);
             
             // Function to project 3D to 2D
             const project = (x, y, z) => {
@@ -574,7 +574,7 @@
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
                 onWheel={handleWheel}
-                style={{ cursor: isDragging ? 'grabbing' : 'grab', width: '800px', height: '700px' }}
+                style={{ cursor: isDragging ? 'grabbing' : 'grab', width: '1000px', height: '700px' }}
               >
                 <div ref={svgRef} className="w-full h-full" />
                 
