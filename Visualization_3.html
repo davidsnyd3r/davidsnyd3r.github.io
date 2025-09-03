@@ -35,18 +35,25 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            padding: 10px 20px;
+            width: 40px;
+            height: 40px;
+            padding: 0;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            border-radius: 8px;
+            border-radius: 50%;
             cursor: pointer;
             backdrop-filter: blur(10px);
             z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
         
         .exit-fullscreen-btn:hover {
             background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
         }
         
         /* Animated gradient background */
@@ -142,11 +149,10 @@
 <body class="bg-gray-950 gradient-bg">
     <!-- Fullscreen Modal -->
     <div id="fullscreen-modal">
-        <button class="exit-fullscreen-btn" onclick="exitFullscreen()">
-            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button class="exit-fullscreen-btn" onclick="exitFullscreen()" title="Exit Fullscreen (ESC)">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="pointer-events: none;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
-            Exit Fullscreen (ESC)
         </button>
         <svg id="fullscreen-viz" viewBox="0 0 900 600" style="cursor: grab;">
             <defs>
@@ -216,16 +222,16 @@
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
                                     <span class="text-gray-400">Rotation</span>
-                                    <span class="text-gray-300 font-mono" id="rotation-value">45°</span>
+                                    <span class="text-gray-300 font-mono" id="rotation-value">-224°</span>
                                 </div>
-                                <input type="range" id="rotation" min="0" max="360" value="45" class="slider w-full bg-gray-700">
+                                <input type="range" id="rotation" min="-360" max="360" value="-224" class="slider w-full bg-gray-700">
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
                                     <span class="text-gray-400">Elevation</span>
-                                    <span class="text-gray-300 font-mono" id="elevation-value">30°</span>
+                                    <span class="text-gray-300 font-mono" id="elevation-value">12°</span>
                                 </div>
-                                <input type="range" id="elevation" min="-90" max="90" value="30" class="slider w-full bg-gray-700">
+                                <input type="range" id="elevation" min="-90" max="90" value="12" class="slider w-full bg-gray-700">
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
@@ -241,16 +247,6 @@
                     <div class="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 p-4 shadow-xl">
                         <h3 class="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-4">Data Layers</h3>
                         <div class="space-y-2">
-                            <label class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 rounded-full bg-pink-500"></div>
-                                    <span class="text-sm text-gray-300">Missing Points</span>
-                                </div>
-                                <div class="toggle-switch">
-                                    <input type="checkbox" id="show-missing">
-                                    <span class="toggle-slider"></span>
-                                </div>
-                            </label>
                             <label class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <div class="w-3 h-3 rounded-full bg-violet-500"></div>
@@ -303,6 +299,16 @@
                             </label>
                             <label class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-pink-500"></div>
+                                    <span class="text-sm text-gray-300">Missing Points</span>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="show-missing">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
                                     <span class="text-red-500">★</span>
                                     <span class="text-sm text-gray-300">Invalid Points</span>
                                 </div>
@@ -335,35 +341,35 @@
                         </div>
                     </div>
                     
-                    <!-- Transformations/Iterations -->
+                    <!-- Transformations/Iterations - ALL CHECKED BY DEFAULT -->
                     <div class="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 p-4 shadow-xl">
                         <h3 class="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-4">Transformations</h3>
                         <div class="space-y-2">
                             <label class="flex items-center justify-between">
                                 <span class="text-sm text-gray-300 font-mono">T¹ (+2, +4, +2)</span>
                                 <div class="toggle-switch">
-                                    <input type="checkbox" id="show-iter1">
+                                    <input type="checkbox" id="show-iter1" checked>
                                     <span class="toggle-slider"></span>
                                 </div>
                             </label>
                             <label class="flex items-center justify-between">
                                 <span class="text-sm text-gray-300 font-mono">T² (+4, +8, +4)</span>
                                 <div class="toggle-switch">
-                                    <input type="checkbox" id="show-iter2">
+                                    <input type="checkbox" id="show-iter2" checked>
                                     <span class="toggle-slider"></span>
                                 </div>
                             </label>
                             <label class="flex items-center justify-between">
                                 <span class="text-sm text-gray-300 font-mono">T³ (+6, +12, +6)</span>
                                 <div class="toggle-switch">
-                                    <input type="checkbox" id="show-iter3">
+                                    <input type="checkbox" id="show-iter3" checked>
                                     <span class="toggle-slider"></span>
                                 </div>
                             </label>
                             <label class="flex items-center justify-between">
                                 <span class="text-sm text-gray-300 font-mono">T⁴ (+8, +16, +8)</span>
                                 <div class="toggle-switch">
-                                    <input type="checkbox" id="show-iter4">
+                                    <input type="checkbox" id="show-iter4" checked>
                                     <span class="toggle-slider"></span>
                                 </div>
                             </label>
@@ -375,9 +381,9 @@
     </div>
 
     <script>
-        // State variables
-        let rotation = 45;
-        let elevation = 30;
+        // State variables - WITH YOUR DEFAULTS
+        let rotation = -224;
+        let elevation = 12;
         let zoom = 1;
         let isDragging = false;
         let lastMouse = { x: 0, y: 0 };
@@ -599,12 +605,10 @@
                     .forEach(p => drawStar(p));
             }
             
-            // Draw iterations - DEBUG: Let's make sure this is running
+            // Draw iterations
             for (let iter = 1; iter <= 4; iter++) {
                 const checkbox = document.getElementById(`show-iter${iter}`);
                 if (!checkbox || !checkbox.checked) continue;
-                
-                console.log(`Drawing iteration ${iter}`); // Debug log
                 
                 // Calculate opacity and size based on iteration
                 const opacity = Math.max(0.3, 1 - iter * 0.15);
@@ -742,12 +746,20 @@
             if (elevValue) elevValue.textContent = Math.round(elevation) + '°';
             
             lastMouse = { x: e.clientX, y: e.clientY };
+            
+            // Draw in both containers if fullscreen is active
+            const modal = document.getElementById('fullscreen-modal');
+            if (modal.classList.contains('active')) {
+                draw(document.getElementById('fullscreen-group'));
+            }
             draw();
         });
 
         document.addEventListener('mouseup', () => {
             isDragging = false;
             svg.style.cursor = 'grab';
+            const fullscreenSvg = document.getElementById('fullscreen-viz');
+            if (fullscreenSvg) fullscreenSvg.style.cursor = 'grab';
         });
 
         svg.addEventListener('wheel', (e) => {
@@ -760,10 +772,10 @@
             draw();
         });
 
-        // Reset view
+        // Reset view - WITH YOUR DEFAULTS
         function resetView() {
-            rotation = 45;
-            elevation = 30;
+            rotation = -224;
+            elevation = 12;
             zoom = 1;
             
             const rotSlider = document.getElementById('rotation');
@@ -818,43 +830,6 @@
             // Redraw in the main container
             draw();
         }
-        
-        // Update mouse move handler to work with both views
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const deltaX = e.clientX - lastMouse.x;
-            const deltaY = e.clientY - lastMouse.y;
-            
-            rotation = (rotation + deltaX * 0.5) % 360;
-            elevation = Math.max(-90, Math.min(90, elevation - deltaY * 0.5));
-            
-            const rotSlider = document.getElementById('rotation');
-            const elevSlider = document.getElementById('elevation');
-            const rotValue = document.getElementById('rotation-value');
-            const elevValue = document.getElementById('elevation-value');
-            
-            if (rotSlider) rotSlider.value = rotation;
-            if (elevSlider) elevSlider.value = elevation;
-            if (rotValue) rotValue.textContent = Math.round(rotation) + '°';
-            if (elevValue) elevValue.textContent = Math.round(elevation) + '°';
-            
-            lastMouse = { x: e.clientX, y: e.clientY };
-            
-            // Draw in both containers if fullscreen is active
-            const modal = document.getElementById('fullscreen-modal');
-            if (modal.classList.contains('active')) {
-                draw(document.getElementById('fullscreen-group'));
-            }
-            draw();
-        });
-        
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            const svg = document.getElementById('viz');
-            const fullscreenSvg = document.getElementById('fullscreen-viz');
-            svg.style.cursor = 'grab';
-            fullscreenSvg.style.cursor = 'grab';
-        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
